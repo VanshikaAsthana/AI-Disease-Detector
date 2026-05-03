@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Disease Detector</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;min-height:100vh;overflow-x:hidden}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.25rem 3rem;display:flex;align-items:center;justify-content:space-between;background:#0a0a0a99;backdrop-filter:blur(12px);border-bottom:1px solid #ffffff08}
+    .nav-logo{display:flex;align-items:center;gap:10px;font-size:1rem;font-weight:700;color:#fff}
+    .nav-dot{width:8px;height:8px;background:#22c55e;border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+    .nav-links{display:flex;align-items:center;gap:2rem}
+    .nav-links a{font-size:0.85rem;color:#666;text-decoration:none;transition:color 0.2s}
+    .nav-links a:hover{color:#fff}
+    .nav-cta{padding:8px 20px;background:#22c55e;color:#000;border:none;border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity 0.2s}
+    .nav-cta:hover{opacity:0.85}
+
+    /* HERO */
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 4rem;position:relative;overflow:hidden}
+    .hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,#22c55e18 0%,transparent 70%);pointer-events:none}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:#0f1f0f;border:1px solid #1a3a1a;border-radius:99px;padding:6px 16px;font-size:0.75rem;color:#4ade80;margin-bottom:2rem;animation:fadeUp 0.6s ease both}
+    .hero-badge-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;animation:pulse 1.5s infinite}
+    .hero h1{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:700;line-height:1.1;margin-bottom:1.5rem;animation:fadeUp 0.6s 0.1s ease both;opacity:0}
+    .hero h1 span{color:#22c55e}
+    .hero p{font-size:clamp(1rem,2vw,1.2rem);color:#666;max-width:560px;line-height:1.7;margin-bottom:2.5rem;animation:fadeUp 0.6s 0.2s ease both;opacity:0}
+    .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp 0.6s 0.3s ease both;opacity:0}
+    .btn-primary{padding:14px 32px;background:#22c55e;color:#000;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.2s;display:inline-block}
+    .btn-primary:hover{opacity:0.85;transform:translateY(-1px)}
+    .btn-secondary{padding:14px 32px;background:transparent;color:#e5e5e5;border:1px solid #222;border-radius:10px;font-size:1rem;font-weight:500;cursor:pointer;text-decoration:none;transition:all 0.2s;display:inline-block}
+    .btn-secondary:hover{border-color:#444;background:#111}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    /* STATS */
+    .stats{display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;padding:3rem 2rem;border-top:1px solid #111;border-bottom:1px solid #111;animation:fadeUp 0.6s 0.4s ease both;opacity:0}
+    .stat{text-align:center}
+    .stat-num{font-size:2rem;font-weight:700;color:#22c55e}
+    .stat-label{font-size:0.8rem;color:#555;margin-top:4px}
+
+    /* FEATURES */
+    .section{padding:5rem 2rem;max-width:1100px;margin:0 auto}
+    .section-label{font-size:0.72rem;font-weight:700;color:#22c55e;text-transform:uppercase;letter-spacing:0.1em;text-align:center;margin-bottom:1rem}
+    .section-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;text-align:center;margin-bottom:1rem;line-height:1.2}
+    .section-sub{font-size:1rem;color:#555;text-align:center;max-width:500px;margin:0 auto 3rem}
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem}
+    .feature-card{background:#111;border:1px solid #1a1a1a;border-radius:16px;padding:1.75rem;transition:border-color 0.2s}
+    .feature-card:hover{border-color:#222}
+    .feature-icon{font-size:2rem;margin-bottom:1rem}
+    .feature-title{font-size:1rem;font-weight:600;color:#fff;margin-bottom:8px}
+    .feature-desc{font-size:0.85rem;color:#555;line-height:1.65}
+
+    /* HOW IT WORKS */
+    .how-section{padding:5rem 2rem;background:#0d0d0d;border-top:1px solid #111;border-bottom:1px solid #111}
+    .how-inner{max-width:900px;margin:0 auto}
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:3rem;position:relative}
+    .step{text-align:center;padding:1.5rem}
+    .step-num{width:48px;height:48px;background:#0f1f0f;border:1px solid #1a3a1a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#22c55e;margin:0 auto 1rem}
+    .step-title{font-size:0.95rem;font-weight:600;color:#fff;margin-bottom:6px}
+    .step-desc{font-size:0.82rem;color:#555;line-height:1.6}
+
+    /* DISEASE CATEGORIES */
+    .cats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:3rem}
+    .cat-card{border-radius:14px;padding:1.5rem;border:1px solid transparent}
+    .cat-skin{background:#1a0f1a;border-color:#3a1a3a}
+    .cat-resp{background:#0f1a2a;border-color:#1a2a3a}
+    .cat-blood{background:#1a0a0a;border-color:#3a1a1a}
+    .cat-gen{background:#1a1a0a;border-color:#3a3a1a}
+    .cat-icon{font-size:1.8rem;margin-bottom:10px}
+    .cat-title{font-size:0.95rem;font-weight:600;margin-bottom:6px}
+    .cat-skin .cat-title{color:#d8b4fe}
+    .cat-resp .cat-title{color:#7dd3fc}
+    .cat-blood .cat-title{color:#fca5a5}
+    .cat-gen .cat-title{color:#fcd34d}
+    .cat-desc{font-size:0.8rem;color:#666;line-height:1.6}
+    .cat-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+    .cat-tag{font-size:0.7rem;padding:2px 9px;border-radius:99px;background:#ffffff08;color:#888}
+
+    /* CTA SECTION */
+    .cta-section{padding:6rem 2rem;text-align:center}
+    .cta-box{max-width:600px;margin:0 auto;background:#111;border:1px solid #1a3a1a;border-radius:24px;padding:3rem 2rem}
+    .cta-box h2{font-size:2rem;font-weight:700;margin-bottom:1rem}
+    .cta-box p{font-size:0.95rem;color:#555;margin-bottom:2rem;line-height:1.65}
+    .disclaimer-small{font-size:0.72rem;color:#333;margin-top:1rem}
+
+    /* FOOTER */
+    footer{border-top:1px solid #111;padding:2rem 3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+    .footer-logo{font-size:0.9rem;font-weight:700;color:#333}
+    .footer-note{font-size:0.75rem;color:#333}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-dot"></div>
+    AI Disease Detector
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#diseases">Diseases</a>
+  </div>
+  <a class="nav-cta" href="index.html">Launch App</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    Powered by local AI · 100% private
+  </div>
+  <h1>Detect diseases with<br><span>AI precision</span></h1>
+  <p>Upload medical images, enter symptoms, and get a full clinical diagnostic report in seconds — powered by AI, running locally on your machine.</p>
+  <div class="hero-btns">
+    <a class="btn-primary" href="index.html">Start diagnosis</a>
+    <a class="btn-secondary" href="#how">See how it works</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">4+</div>
+    <div class="stat-label">Disease categories</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">5</div>
+    <div class="stat-label">Diagnoses per analysis</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">Local & private</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">&lt;5s</div>
+    <div class="stat-label">Analysis time</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-label">Features</div>
+  <div class="section-title">Everything you need for<br>advanced diagnostics</div>
+  <p class="section-sub">A complete AI diagnostic system combining image analysis, symptom tracking, and clinical reasoning.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🩻</div>
+      <div class="feature-title">Medical image analysis</div>
+      <div class="feature-desc">Upload X-rays, MRIs, CT scans, or skin photos. The AI visually analyzes the image alongside your symptoms for a combined diagnosis.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔬</div>
+      <div class="feature-title">Probability comparison</div>
+      <div class="feature-desc">Get 5 ranked diagnoses with probability scores, severity levels, and key indicators — not just a single guess.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧬</div>
+      <div class="feature-title">Lab report analysis</div>
+      <div class="feature-desc">Upload blood test results or lab reports. The AI reads and interprets abnormal values to detect conditions like diabetes or anemia.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Instant results</div>
+      <div class="feature-desc">Full clinical reports generated in seconds — including detected abnormalities, risk factors, recommended tests, and treatment suggestions.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-title">Fully private</div>
+      <div class="feature-desc">Everything runs locally on your machine using Ollama. Your medical data never leaves your computer.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🚨</div>
+      <div class="feature-title">Urgency detection</div>
+      <div class="feature-desc">Automatically flags emergency conditions and tells you whether to seek care immediately, within 48 hours, or routinely.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <div class="section-label">How it works</div>
+    <div class="section-title" style="text-align:center">From symptoms to diagnosis<br>in four steps</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Enter symptoms</div>
+        <div class="step-desc">Select from quick-add buttons or type your own symptoms. Add as many as you have.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Upload image</div>
+        <div class="step-desc">Optionally upload an X-ray, skin photo, or lab report for visual analysis.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Add patient info</div>
+        <div class="step-desc">Enter age, sex, duration, severity, and any relevant medical history.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-title">Get full report</div>
+        <div class="step-desc">Receive a ranked list of diagnoses with probabilities, urgency level, and next steps.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISEASE CATEGORIES -->
+<section class="section" id="diseases">
+  <div class="section-label">Coverage</div>
+  <div class="section-title">Four disease categories</div>
+  <p class="section-sub">Specialized AI reasoning across the most common diagnostic domains.</p>
+  <div class="cats-grid">
+    <div class="cat-card cat-skin">
+      <div class="cat-icon">🧴</div>
+      <div class="cat-title">Skin diseases</div>
+      <div class="cat-desc">Visual analysis of rashes, lesions, discoloration, and skin abnormalities.</div>
+      <div class="cat-tags">
+        <span class="cat-tag">Melanoma</span>
+        <span class="cat-tag">Eczema</span>
+        <span class="cat-tag">Psoriasis</span>
+        <span class="cat-tag">Rosacea</span>
+      </div>
+    </div>
+    <div class="cat-card cat-resp">
+      <div class="cat-icon">🫁</div>
+      <div class="cat-title">Respiratory</div>
+      <div class="cat-desc">X-ray and symptom analysis for lung and airway conditions.</div>
+      <div class="cat-tags">
+        <span class="cat-tag">Pneumonia</span>
+        <span class="cat-tag">COVID-19</span>
+        <span class="cat-tag">Tuberculosis</span>
+        <span class="cat-tag">Asthma</span>
+      </div>
+    </div>
+    <div class="cat-card cat-blood">
+      <div class="cat-icon">🩸</div>
+      <div class="cat-title">Blood & lab</div>
+      <div class="cat-desc">Lab report interpretation for metabolic and blood-related conditions.</div>
+      <div class="cat-tags">
+        <span class="cat-tag">Diabetes</span>
+        <span class="cat-tag">Anemia</span>
+        <span class="cat-tag">Thyroid</span>
+        <span class="cat-tag">Cholesterol</span>
+      </div>
+    </div>
+    <div class="cat-card cat-gen">
+      <div class="cat-icon">🏥</div>
+      <div class="cat-title">General medicine</div>
+      <div class="cat-desc">Broad symptom-based reasoning across common illnesses and conditions.</div>
+      <div class="cat-tags">
+        <span class="cat-tag">Influenza</span>
+        <span class="cat-tag">Infection</span>
+        <span class="cat-tag">Migraine</span>
+        <span class="cat-tag">Hypertension</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-box">
+    <h2>Ready to start?</h2>
+    <p>Run a full AI diagnostic analysis in seconds. No data leaves your machine. No account required.</p>
+    <a class="btn-primary" href="index.html" style="font-size:1.05rem;padding:16px 40px;">Launch the detector</a>
+    <div class="disclaimer-small">For informational purposes only. Not a substitute for professional medical advice. Always consult a qualified healthcare provider.</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">AI Disease Detector</div>
+  <div class="footer-note">For educational and informational use only · Not medical advice</div>
+</footer>
+
+</body>
+</html>
