@@ -57,7 +57,7 @@ disease-detector/
 │
 ├── backend/
 │   ├── main.py        ← FastAPI backend
-│   └── .env           ← API keys (never commit this)
+│   └── .env           ← API keys 
 │
 └── frontend/
 ├── welcome.html   ← Landing page
